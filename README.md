@@ -10,6 +10,9 @@ tensorflow2.0时，还需要调用tf.disable_eager_execution()，这函数只能
 ### 题目31:
 使用神经网络训练并预测MINST数据集。
 
+### 题目32:
+使用神经网络训练并预测sin函数数据集。
+
 
 
 
