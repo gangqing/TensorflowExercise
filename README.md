@@ -5,7 +5,7 @@ tensorflow2.0时，还需要调用tf.disable_eager_execution()，这函数只能
 > 初识session(图),variable(变量)，placeholder(占位符)，tensorflow自动求导。
 
 ### 题目30:
-使用tensorflow自定义神经网络，批量求[0.01，2]的开根，使用matplotlib绘制结果图，求导交给tensorflow。
+使用tensorflow自定义神经网络，批量求开根，使用matplotlib绘制结果图，求导交给tensorflow。
 
 >
 
