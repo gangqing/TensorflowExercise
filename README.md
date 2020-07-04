@@ -25,6 +25,11 @@ tensorflow2.0时，还需要调用tf.disable_eager_execution()，这函数只能
 >tensorboard命令：tensorboard --logdir logs/p35 --port 9876
 >对应的网址：http://localhost:9876
 
+### 题目36:
+抽取config类，使用argparse，让config能从终端中更改变量值。如：
+>python3 p36_config.py --lr 0.1
+
+
 
 
 
