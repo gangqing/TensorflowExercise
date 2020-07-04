@@ -16,7 +16,8 @@ tensorflow2.0时，还需要调用tf.disable_eager_execution()，这函数只能
 ### 题目33:
 使用神经网络进行多输出练习。
 
-
+### 题目34:
+使用卷积神经网络训练并预测MINST数据集。
 
 
 
