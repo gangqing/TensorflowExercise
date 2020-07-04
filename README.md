@@ -7,7 +7,8 @@ tensorflow2.0时，还需要调用tf.disable_eager_execution()，这函数只能
 ### 题目30:
 使用tensorflow自定义神经网络，批量求开根，使用matplotlib绘制结果图，求导交给tensorflow。
 
->
+### 题目31:
+使用神经网络训练并预测MINST数据集。
 
 
 
