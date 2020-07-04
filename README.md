@@ -19,6 +19,13 @@ tensorflow2.0时，还需要调用tf.disable_eager_execution()，这函数只能
 ### 题目34:
 使用卷积神经网络训练并预测MINST数据集。
 
+### 题目35:
+在题目34的基础上添加loss和precise的summary，使用tensorboard查看summary.
+
+>tensorboard命令：tensorboard --logdir logs/p35 --port 9876
+>对应的网址：http://localhost:9876
+
+
 
 
 
