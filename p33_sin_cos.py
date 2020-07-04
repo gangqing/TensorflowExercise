@@ -5,24 +5,25 @@ from matplotlib import pyplot as plt
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-# 神经网络之sin函数训练和预测
+
+# 神经网络之多输出归纳：每个输出之间相互独立
 class Config:
     def __init__(self):
         self.lr = 0.01
         self.epoches = 2000
-        self.save_path = "models/p32/sin"
+        self.save_path = "models/p33/sin_cos"
         self.train_size = 200
         self.predict_size = 200
         self.hidden_units = 200
         self.train_range = np.pi
-        self.predict_range = np.pi * 2
+        self.predict_range = np.pi
 
 
 class Simple:
     def __init__(self,low,high,example_size):
-        self.xs = np.random.uniform(low=low, high=high, size=example_size)
+        self.xs = np.random.uniform(low=low, high=high, size=example_size) # 一维张量 ， [1,2,3,4]
         self.xs = sorted(self.xs)
-        self.ys = np.sin(self.xs)
+        self.ys = np.sin(self.xs) , np.cos(self.xs) , np.square(self.xs) # 二维张量 [2,-1]
 
     @property
     def num_example(self):
@@ -30,15 +31,15 @@ class Simple:
 
 class Tensors:
     def __init__(self,config : Config):
-        self.xs = tf.placeholder(dtype=tf.float32, shape=[None], name="x")
-        x = tf.reshape(self.xs, [-1,1])
-        x = tf.layers.dense(x, config.hidden_units,activation=tf.nn.relu)
-        y_predict = tf.layers.dense(x, 1)
-        self.y_predict = tf.reshape(y_predict, [-1])
+        self.xs = tf.placeholder(dtype=tf.float32, shape=[None], name="x") # 输入的x值为一维张量 , 如[1，2，3，4]
+        x = tf.reshape(self.xs, [-1,1]) # 将x标量转化为[n,1]的二维张量 ， n为输入时的样本量
+        x = tf.layers.dense(x, config.hidden_units,activation=tf.nn.relu) # 全连接层
+        self.y_predict = tf.layers.dense(x, 3) # 输出层， 输出为[n,2]的二维张量
+        y_predict = tf.transpose(self.y_predict)  # 转置 [2,n]
 
-        self.ys = tf.placeholder(dtype=tf.float32,shape=None, name="y")
+        self.ys = tf.placeholder(dtype=tf.float32,shape=[3,None], name="y") # 真实值，
         self.lr = tf.placeholder(dtype=tf.float32,name="lr")
-        self.loss = tf.reduce_mean(tf.square(self.ys - self.y_predict))
+        self.loss = tf.reduce_mean(tf.square(self.ys - y_predict))
         opt = tf.train.AdamOptimizer(self.lr)
         self.train_opt = opt.minimize(self.loss)
 
@@ -93,7 +94,7 @@ if __name__ == '__main__':
     with app:
         train_xs,train_ys = app.train()
         predict_xs,predict_ys = app.predict()
-
+    train_ys = np.transpose(train_ys)
     plt.plot(train_xs,train_ys)
     plt.plot(predict_xs,predict_ys)
     plt.show()
