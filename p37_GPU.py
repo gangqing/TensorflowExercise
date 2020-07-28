@@ -7,6 +7,7 @@ from tensorflow_core.examples.tutorials.mnist.input_data import read_data_sets
 
 # 使用二维卷积神经网络进进MINST图片分类
 
+
 class Config():
     def __init__(self):
         self.data_path = "MNIST_data"
@@ -16,6 +17,7 @@ class Config():
         self.lr = 0.01
         self.epoches = 1
         self.is_new_model = True
+
 
 class Tensors():
     def __init__(self):

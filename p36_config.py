@@ -1,60 +1,62 @@
 import argparse
 
+
 class Config:
     def __init__(self):
-        self.lr = 0.001
-        self.epoches = 2000
-        self.batch_size = 200
-        self.logdir = "logs/{name}".format(name = self.getName())
-        self.save_path = "models/{name}/{name}".format(name = self.getName())
         self.simple_path = None
+        self.save_path = "models/{name}/{name}".format(name=self.get_name())
+        self.logdir = "logs/{name}".format(name=self.get_name())
+        self.epoches = 200
+        self.batch_size = 500
+        self.lr = 0.01
         self.new_model = False
 
-    def getName(self):
-        raise Exception("getName() is not redefined.")
+    def get_name(self):
+        raise Exception("get_name() is not redefined!")
 
     def __repr__(self):
-        attrDict = self.get_attrs() # 字典
-        result = [f"{key} = {attrDict[key]}" for key in attrDict]
-        return "\n".join(result)
+        """
+        :return: attr1 = value1, attr2 = value2 ...
+        """
+        attrs = self.get_attrs()
+        result = ["{attr} = {value}".format(attr=attr, value=attrs[attr]) for attr in attrs]
+        return ", ".join(result)
 
     def get_attrs(self):
+        """
+        :return: dict
+        """
         result = {}
-        for attr in dir(self): # 获取所有属性
-            if attr.startswith("_"): # 过滤系统自带的属性
+        for attr in dir(self):
+            if attr.startswith("_"):
                 continue
-            value = getattr(self,attr) # 获取属性的值
+            value = getattr(self, attr)  # 获取属性的值
             if type(value) in [int, float, str, bool]:
                 result[attr] = value
         return result
 
     def from_cmd(self):
-        attrDict = self.get_attrs()
-        parse = argparse.ArgumentParser()
-        for key in attrDict:
-            value = attrDict[key]
+        attrs = self.get_attrs()
+        parser = argparse.ArgumentParser()
+        for attr in attrs:
+            value = attrs[attr]
             if type(value) == bool:
-                parse.add_argument(f"--{key}",default=value,help=f"default to {value}",action=f"store_{not value}".lower())
+                parser.add_argument("--{attr}".format(attr=attr), default=value, action=f"store_{not value}".lower())
             else:
-                v_type = str if type(value) is None else type(value)
-                parse.add_argument(f"--{key}",type=v_type, default=value, help=f"default to {value}")
+                v_type = str if value is None else type(value)
+                parser.add_argument("--{attr}".format(attr=attr), type=v_type, default=value, help=f"default to {value}")
 
-        args = parse.parse_args()
-        for key in attrDict:
-            if hasattr(args,key):
-                setattr(self,key,getattr(args,key))
+        args = parser.parse_args()
+        for attr in attrs:
+            if hasattr(args, attr):
+                setattr(self, attr, getattr(args, attr))
 
 
 class MyConfig(Config):
-    def __init__(self):
-        super().__init__()
-        self.epoches = 100
+    def get_name(self):
+        return "36"
 
-    def getName(self):
-        return "my_config"
 
 if __name__ == '__main__':
     config = MyConfig()
-    print(config)
-    config.from_cmd()
     print(config)
