@@ -33,6 +33,15 @@ tensorflow2.0时，还需要调用tf.disable_eager_execution()，这函数只能
 在题目35上修改，指定使用0号GPU创建Tensors
 >tf.device("/gpu:0")
 
+### 题目38
+使用argparse创建变量
+
+### 题目39
+整合p36和p37，抽取不变部分作为框架
+
+
+### 题目40
+使用题目39的框架，实现VAE模型
 
 
 
