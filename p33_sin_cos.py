@@ -21,7 +21,7 @@ class Config:
 
 class Simple:
     def __init__(self,low,high,example_size):
-        self.xs = np.random.uniform(low=low, high=high, size=example_size) # 一维张量 ， [1,2,3,4]
+        self.xs = np.random.uniform(low=low, high=high, size=example_size) # 一维张量
         self.xs = sorted(self.xs)
         self.ys = np.sin(self.xs) , np.cos(self.xs) , np.square(self.xs) # 二维张量 [2,-1]
 

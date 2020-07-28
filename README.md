@@ -29,6 +29,10 @@ tensorflow2.0时，还需要调用tf.disable_eager_execution()，这函数只能
 抽取config类，使用argparse，让config能从终端中更改变量值。如：
 >python3 p36_config.py --lr 0.1
 
+### 题目37：
+在题目35上修改，指定使用0号GPU创建Tensors
+>tf.device("/gpu:0")
+
 
 
 

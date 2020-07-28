@@ -10,48 +10,53 @@ from tensorflow_core.examples.tutorials.mnist.input_data import read_data_sets
 class Config():
     def __init__(self):
         self.data_path = "MNIST_data"
-        self.save_path = 'models/p35/conv_mnist'
-        self.logdir = "logs/p35"
+        self.save_path = 'models/p37/GPU'
+        self.logdir = "logs/p37"
         self.batch_size = 200
         self.lr = 0.01
-        self.epoches = 3
+        self.epoches = 1
         self.is_new_model = True
 
 class Tensors():
     def __init__(self):
-        # 初始化数据
-        self.xs = tf.placeholder(dtype=tf.float32, shape=[None,784], name="x") # [n,784]
-        self.ys = tf.placeholder(dtype=tf.int32, shape=[None], name="y") #[n]
-        self.lr = tf.placeholder(dtype=tf.float32, shape=None, name="lr") # 0.01
-        xs = tf.reshape(self.xs,[-1,28,28,1])
-        # 隐层和输出层
-        xs = tf.layers.conv2d(xs,16,3,strides=(1, 1),padding='same',activation=tf.nn.relu) # [-1,28,28,16]
-        xs = tf.layers.conv2d(xs,32,3,2,padding="same",activation=tf.nn.relu) # [-1,14,14,32]
-        xs = tf.layers.conv2d(xs,64,3,2,padding="same",activation=tf.nn.relu) # [-1,7,7,64]
-        xs = tf.layers.flatten(xs) # [-1, 7*7*64]
-        ys_predict = tf.layers.dense(xs,10) # [-1, 10]
-        # 输出结果
-        self.ys_predict = tf.argmax(ys_predict, axis=1,output_type=tf.int32) # 标签
-        precise = tf.cast(tf.equal(self.ys,self.ys_predict),dtype=tf.float32)
-        self.precise = tf.reduce_mean(precise) # 精度
-        self.precise_summary = tf.summary.scalar(name="precise_summary", tensor=self.precise)
-        # 损失函数
-        ys = tf.one_hot(self.ys, 10)
-        loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = ys, logits = ys_predict) # [-1,1]
-        self.loss = tf.reduce_mean(loss)
-        self.loss_summary = tf.summary.scalar(name="loss_summary",tensor=self.loss)
-        # 优化器
-        opt = tf.train.AdamOptimizer(self.lr)
-        self.train_opt = opt.minimize(self.loss)
+        with tf.device("/gpu:0"):
+            # 初始化数据
+            self.xs = tf.placeholder(dtype=tf.float32, shape=[None,784], name="x") # [n,784]
+            self.ys = tf.placeholder(dtype=tf.int32, shape=[None], name="y") #[n]
+            self.lr = tf.placeholder(dtype=tf.float32, shape=None, name="lr") # 0.01
+            xs = tf.reshape(self.xs,[-1,28,28,1])
+            # 隐层和输出层
+            xs = tf.layers.conv2d(xs,16,3,strides=(1, 1),padding='same',activation=tf.nn.relu) # [-1,28,28,16]
+            xs = tf.layers.conv2d(xs,32,3,2,padding="same",activation=tf.nn.relu) # [-1,14,14,32]
+            xs = tf.layers.conv2d(xs,64,3,2,padding="same",activation=tf.nn.relu) # [-1,7,7,64]
+            xs = tf.layers.flatten(xs) # [-1, 7*7*64]
+            ys_predict = tf.layers.dense(xs,10) # [-1, 10]
+            # 输出结果
+            self.ys_predict = tf.argmax(ys_predict, axis=1,output_type=tf.int32) # 标签
+            precise = tf.cast(tf.equal(self.ys,self.ys_predict),dtype=tf.float32)
+            self.precise = tf.reduce_mean(precise) # 精度
+            self.precise_summary = tf.summary.scalar(name="precise_summary", tensor=self.precise)
+            # 损失函数
+            ys = tf.one_hot(self.ys, 10)
+            loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = ys, logits = ys_predict) # [-1,1]
+            self.loss = tf.reduce_mean(loss)
+            self.loss_summary = tf.summary.scalar(name="loss_summary",tensor=self.loss)
+            # 优化器
+            opt = tf.train.AdamOptimizer(self.lr)
+            self.train_opt = opt.minimize(self.loss)
 
 
 
 class App():
     def __init__(self,config : Config):
+        cfp = tf.ConfigProto()  # tf.ConfigProto一般用在创建session的时候用来对session进行参数配置。
+        cfp.allow_soft_placement = True  # 如果你指定的设备不存在，允许TF自动分配设备
+
         self.config = config
-        self.session = tf.Session()
+        self.session = tf.Session(config = cfp)
         self.ts = Tensors()
         self.saver = tf.train.Saver()
+
         if config.is_new_model:
             self.session.run(tf.global_variables_initializer())
         else:
@@ -86,18 +91,28 @@ class App():
             precise_totle += precise
         print(f"precise = {precise_totle / batches}")
 
+    def close(self):
+        self.session.close()
+
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.session.close()
+        self.close()
+
 
 if __name__ == '__main__':
     tf.disable_eager_execution()
+    tf.reset_default_graph()
 
     config = Config()
     app = App(config)
     da = read_data_sets(config.data_path)
     with app:
         app.train(da)
-        app.predict(da)
+        # app.predict(da)
+
+    app = App(config)
+    with app:
+        app.train(da)
+        # app.predict(da)

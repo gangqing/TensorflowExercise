@@ -18,7 +18,7 @@ class Tensors():
         self.xs = tf.placeholder(dtype=tf.float32, shape=[None,784], name="x") # [n,784]
         self.ys = tf.placeholder(dtype=tf.int32, shape=[None], name="y") #[n]
         self.lr = tf.placeholder(dtype=tf.float32, shape=None, name="lr") # 0.01
-        xs = tf.reshape(self.xs,[-1,28,28,1])
+        xs = tf.reshape(self.xs, [-1,28,28,1])
         # 隐层和输出层
         xs = tf.layers.conv2d(xs,16,3,strides=(1, 1),padding='same',activation=tf.nn.relu) # [-1,28,28,16]
         xs = tf.layers.conv2d(xs,32,3,2,padding="same",activation=tf.nn.relu) # [-1,14,14,32]
@@ -31,7 +31,7 @@ class Tensors():
         self.precise = tf.reduce_mean(precise) # 精度
         # 损失函数
         ys = tf.one_hot(self.ys, 10)
-        loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = ys, logits = ys_predict) # [-1,1]
+        loss = tf.nn.softmax_cross_entropy_with_logits_v2(labels = ys, logits = ys_predict) # [-1]
         self.loss = tf.reduce_mean(loss)
         # 优化器
         opt = tf.train.AdamOptimizer(self.lr)
