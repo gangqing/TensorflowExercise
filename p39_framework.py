@@ -102,7 +102,7 @@ class App:
                 print(f"epoch = {epoch} , batch = {batch} , loss = {loss}")
             # precise = session.run(ts.precise_summary, self.get_feed_dict(ds_validation))
             # writer.add_summary(precise, global_step=epoch)
-        self.save()
+                self.save()
 
     def get_feed_dict(self, ds):
         values = ds.next_batch(self.config.batch_size)  # xs,ys
